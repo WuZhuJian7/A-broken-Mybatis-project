@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper文件想到与DAO接口的‘实现类’，namespace属性要指定实现 DAO 接口的全限定名-->
+<mapper namespace="com.ccy.dao.StudentDAO">
+                            <!--parameterType可以不写--><!--useGenerateKeys设置添加操作是否需要回填生成的主键-->
+                                                        <!--设置回填的组件值赋值到参数对象的哪个属性-->
+    <insert id="insertStudent" parameterType="com.ccy.pojo.Student" useGeneratedKeys="true" keyProperty="stuId">
+        insert into tb_student(stu_num,stu_name,stu_gender,stu_age)
+        values(#{stuNum},#{stuName},#{stuGender},#{stuAge})
+    </insert>
+
+    <delete id="deleteStudent">
+        delete from tb_student where stu_num=#{stuNum}
+    </delete>
+    
+    <update id="updateStudent">
+        update tb_student
+        set
+            stu_name=#{stuName},
+            stu_gender=#{stuGender},
+            stu_age=#{stuAge}
+        where
+            stu_name=#{stuNum}
+    </update>
+
+    <!--resultType指定查询结果封装的对象的实体类-->
+    <!--resultSets指定当前返回的 集合类型，可以省略-->
+
+    <!--第一种方法-->
+    <!--
+    <select id="listStudents" resultType="com.ccy.pojo.Student" resultSets="java.util.List">
+        select sid stuId,stu_num stuNum,stu_name stuName,stu_gender stuGender,stu_age stuAge
+        from tb_student
+    </select>
+    -->
+
+    <!--数据库字段和实体类中的映射关系-->
+    <!--resultMap标签用于定义实体类与数据表的映射关系（ORM）-->
+    <resultMap id="studentMap" type="com.ccy.pojo.Student">
+        <id column="sid" property="stuId"/>
+        <result column="stu_num" property="stuNum"></result>
+        <result column="stu_name" property="stuName"></result>
+        <result column="stu_gender" property="stuGender"></result>
+        <result column="stu_age" property="stuAge"></result>
+    </resultMap>
+    <!--resultMap用于引用一个实体的映射关系，当配置了resultMap之后resultTyope可以省略-->
+    <select id="listStudents" resultMap="studentMap">
+        select sid,stu_num,stu_name,stu_gender,stu_age
+        from tb_student;
+    </select>
+
+    <select id="queryStudent" resultMap="studentMap">
+        select sid,stu_num,stu_name,stu_gender,stu_age
+        from tb_student
+        where stu_num=#{stuNum}
+    </select>
+
+<!--    <select id="listStudentsByPage" resultMap="studentMap">
+        select sid,stu_num,stu_name,stu_gender,stu_age
+        from tb_student
+
+        //limit #{arg0},#{arg1}
+        //limit #{param1},#{param2}
+
+        limit #{start},#{pageSize}
+    </select>
+-->
+</mapper>
